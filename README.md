@@ -22,11 +22,9 @@ $ cdc-rag avaliar
 Perguntas: 18
 hit@3: 77.8%
 MRR: 0.657
-
-$ cdc-rag perguntar "Fui cobrado por um valor indevido, recebo em dobro?"   # com ANTHROPIC_API_KEY
-Sim. Quem é cobrado em quantia indevida tem direito à devolução em dobro do que pagou a mais...
-Artigos citados: Art. 42
 ```
+
+O comando `cdc-rag perguntar "..."` (com `ANTHROPIC_API_KEY`) devolve a resposta do Claude, a lista de **artigos citados** pela API e os artigos recuperados pela busca. *(Exemplo real de saída entra aqui no M2.)*
 
 ## Arquitetura
 
