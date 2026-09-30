@@ -33,6 +33,18 @@ $ cdc-rag buscar "O pacote de biscoito veio com menos gramas do que diz a embala
 
 O comando `cdc-rag perguntar "..."` (com `ANTHROPIC_API_KEY`) devolve a resposta do Claude, a lista de **artigos citados** pela API e os artigos recuperados pela busca.
 
+## Com o Claude de verdade
+
+Execução real (30/09/2026, `claude-opus-5-5`, effort `low`, busca híbrida, k=4) — saída completa em [`docs/exemplo-resposta.json`](docs/exemplo-resposta.json):
+
+> **Pergunta:** Comprei um celular pela internet e me arrependi. Posso devolver e receber o dinheiro de volta?
+>
+> **Resposta:** Sim. O Código de Defesa do Consumidor garante o chamado "direito de arrependimento": o consumidor pode desistir do contrato, no prazo de 7 dias a contar de sua assinatura ou do ato de recebimento do produto [...]. O artigo não cita a internet expressamente, mas uma compra online é feita fora da loja física, por isso se enquadra nessa regra. [...] os valores eventualmente pagos, a qualquer título, durante o prazo de reflexão, serão devolvidos, de imediato, monetariamente atualizados.
+>
+> **Artigos citados pela API:** Art. 49 · **Recuperados pela busca:** Art. 106, 54-G, 49, 41
+
+O que isso mostra: a citação vem da própria API (não de um "[fonte]" escrito pelo modelo), e dos quatro artigos recuperados só o relevante foi citado. Também mostra o ponto fraco atual: a busca pôs o art. 49 em 3º lugar. Custo medido: 3.630 tokens de entrada, 583 de saída, **US$ 0,026**.
+
 ## Arquitetura
 
 ```
