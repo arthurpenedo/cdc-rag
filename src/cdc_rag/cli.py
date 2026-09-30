@@ -84,13 +84,15 @@ def _comparar(articles, args) -> int:
     for metodo, r in relatorios.items():
         print(f"{metodo:<10} {r[f'hit@{args.k}']:>7.1%} {r['mrr']:>6.3f}")
 
+    for destino in (args.json, args.html):
+        if destino:
+            destino.parent.mkdir(parents=True, exist_ok=True)
     if args.json:
         resumo = {m: {k: v for k, v in r.items() if k != "detalhes"} for m, r in relatorios.items()}
         args.json.write_text(json.dumps(resumo, ensure_ascii=False, indent=2), encoding="utf-8")
     if args.html:
         from .report import render_html
 
-        args.html.parent.mkdir(parents=True, exist_ok=True)
         args.html.write_text(render_html(BM25(articles), relatorios), encoding="utf-8")
         print(f"Relatório: {args.html}")
     return 0
