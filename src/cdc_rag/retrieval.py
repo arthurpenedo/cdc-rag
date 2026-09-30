@@ -1,8 +1,7 @@
 """Busca lexical BM25 sobre os artigos do CDC, implementada do zero (sem dependências).
 
-Por que BM25 e não embeddings, nesta fase: o corpus é pequeno (~120 artigos), o vocabulário
-jurídico é estável, e BM25 é explicável, rápido e sem custo. Embeddings entram no M2 como
-comparação (busca híbrida), medida pela mesma avaliação de hit@k.
+BM25 é a linha de base: explicável, instantâneo e sem custo. A busca densa (dense.py) e a
+híbrida (fusion.py) são comparadas contra ela pela mesma avaliação (evaluation.py).
 """
 
 import json
@@ -28,10 +27,13 @@ def normalize(text: str) -> str:
     return "".join(ch for ch in text if not unicodedata.combining(ch))
 
 
+SUFFIXES = (("coes", "cao"), ("soes", "sao"), ("oes", "ao"), ("aes", "ao"), ("ais", "al"),
+            ("eis", "el"), ("res", "r"), ("mente", ""), ("s", ""))
+
+
 def stem(token: str) -> str:
     """Radicalização leve para português: plurais e alguns sufixos comuns."""
-    for suffix, repl in (("coes", "cao"), ("soes", "sao"), ("oes", "ao"), ("aes", "ao"), ("ais", "al"),
-                         ("eis", "el"), ("res", "r"), ("mente", ""), ("s", "")):
+    for suffix, repl in SUFFIXES:
         if len(token) > len(suffix) + 3 and token.endswith(suffix):
             return token[: -len(suffix)] + repl
     return token
@@ -71,6 +73,15 @@ class BM25:
         df = Counter(term for d in self.docs for term in d)
         n = len(self.docs)
         self.idf = {t: math.log(1 + (n - f + 0.5) / (f + 0.5)) for t, f in df.items()}
+
+    def to_dict(self) -> dict:
+        """Índice serializado para a busca no navegador (report.py + static/busca.js)."""
+        return {
+            "k1": self.k1, "b": self.b, "avg_len": self.avg_len, "idf": self.idf,
+            "stopwords": sorted(STOPWORDS), "suffixes": SUFFIXES,
+            "docs": [{"artigo": a.artigo, "tf": dict(d), "len": n}
+                     for a, d, n in zip(self.articles, self.docs, self.lengths)],
+        }
 
     def search(self, query: str, k: int = 5) -> list[Hit]:
         terms = tokenize(query)

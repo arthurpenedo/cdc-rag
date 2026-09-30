@@ -1,0 +1,66 @@
+name: Avaliação da busca
+
+# Compara BM25, embeddings e busca híbrida nas perguntas de avaliação, falha se algum método
+# regredir e publica a página (busca no navegador + comparação) no GitHub Pages.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: busca-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MODELO: minishlab/potion-multilingual-128M
+  REVISAO: 73908c3438cf03b6a01bcb9611d62b23d0726f08
+  CDC_RAG_EMBEDDINGS: models/potion
+
+jobs:
+  avaliar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install -e ".[dev,embeddings]"
+      - uses: actions/cache@v4
+        with:
+          path: models/potion
+          key: potion-${{ env.REVISAO }}
+      - name: Baixar modelo de embeddings (revisão fixa, sem ONNX)
+        run: |
+          python -c "import os; from huggingface_hub import snapshot_download as d; \
+          d(os.environ['MODELO'], revision=os.environ['REVISAO'], local_dir='models/potion', \
+          ignore_patterns=['onnx/*', '.eval_results/*'])"
+      - name: Testes (inclui linhas de base de denso e híbrido)
+        run: pytest -q
+      - name: Comparar métodos e gerar a página
+        run: cdc-rag comparar --html site/index.html --json site/resultados.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: busca
+          path: site
+      - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  publicar:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: avaliar
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

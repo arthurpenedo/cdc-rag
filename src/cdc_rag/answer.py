@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 
 import anthropic
 
-from .retrieval import BM25, Hit
+from .retrieval import Hit
 
 MODEL = os.getenv("CDC_RAG_MODEL", "claude-opus-5-5")
 
@@ -46,7 +46,7 @@ def build_documents(hits: list[Hit]) -> list[dict]:
     ]
 
 
-def answer(question: str, index: BM25, k: int = 4, client: anthropic.Anthropic | None = None) -> Answer:
+def answer(question: str, index, k: int = 4, client: anthropic.Anthropic | None = None) -> Answer:
     hits = index.search(question, k=k)
     recuperados = [h.article.titulo for h in hits]
     if not hits:

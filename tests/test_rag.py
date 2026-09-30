@@ -6,7 +6,7 @@ from cdc_rag.answer import answer, build_documents
 from cdc_rag.evaluation import evaluate, load_questions
 from cdc_rag.retrieval import BM25, load_articles, stem, tokenize
 
-BASELINE_HIT_AT_3 = 0.75  # linha de base do BM25; mudanças na busca não podem piorar isso
+BASELINE_HIT_AT_3 = 0.55  # linha de base do BM25 nas 58 perguntas (56,9%); a busca não pode piorar
 
 
 @pytest.fixture(scope="module")

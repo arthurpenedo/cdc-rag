@@ -16,3 +16,43 @@
 {"pergunta": "O fornecedor pode se recusar a cumprir a oferta?", "artigos": ["35"]}
 {"pergunta": "Quem é considerado fornecedor?", "artigos": ["2", "3"]}
 {"pergunta": "Posso pedir a inversão do ônus da prova?", "artigos": ["6"]}
+{"pergunta": "Minha geladeira veio com defeito e a loja diz que tenho que falar só com o fabricante. Ela pode fazer isso?", "artigos": ["18"]}
+{"pergunta": "Se o produto não for consertado em 30 dias posso pedir meu dinheiro de volta?", "artigos": ["18"]}
+{"pergunta": "O pacote de biscoito veio com menos gramas do que diz a embalagem. O que posso fazer?", "artigos": ["19"]}
+{"pergunta": "A oficina é obrigada a me passar um orçamento antes de consertar o carro?", "artigos": ["40"]}
+{"pergunta": "A oficina pode colocar peça usada no meu carro sem me avisar?", "artigos": ["21", "70"]}
+{"pergunta": "Se eu quitar o empréstimo antes do prazo, os juros diminuem?", "artigos": ["52"]}
+{"pergunta": "Qual a multa máxima por atraso no pagamento de uma parcela?", "artigos": ["52"]}
+{"pergunta": "Se eu parar de pagar as prestações, perco tudo o que já paguei?", "artigos": ["53"]}
+{"pergunta": "O que é um contrato de adesão?", "artigos": ["54"]}
+{"pergunta": "O contrato pode ter letras minúsculas difíceis de ler?", "artigos": ["54"]}
+{"pergunta": "Quando uma cláusula do contrato é ambígua, ela vale a favor de quem?", "artigos": ["47"]}
+{"pergunta": "A garantia do fabricante substitui a garantia prevista em lei?", "artigos": ["50", "24"]}
+{"pergunta": "A loja precisa me entregar o certificado de garantia preenchido?", "artigos": ["50", "74"]}
+{"pergunta": "O fabricante precisa vender peças de reposição depois que o produto sai de linha?", "artigos": ["32"]}
+{"pergunta": "O cobrador pode me ameaçar ou me constranger por causa de uma dívida?", "artigos": ["42", "71"]}
+{"pergunta": "O boleto de cobrança precisa mostrar o CNPJ da empresa?", "artigos": ["42-A"]}
+{"pergunta": "Tenho direito de ver o que o Serasa ou o SPC têm registrado sobre mim?", "artigos": ["43"]}
+{"pergunta": "Por quanto tempo meu nome pode ficar sujo por uma dívida?", "artigos": ["43"]}
+{"pergunta": "O Procon divulga uma lista de empresas que mais recebem reclamações?", "artigos": ["44"]}
+{"pergunta": "A loja pode exigir que eu compre outro item para vender o que eu quero?", "artigos": ["39"]}
+{"pergunta": "A companhia de energia pode prestar um serviço ruim ou interrompê-lo sem motivo?", "artigos": ["22"]}
+{"pergunta": "A empresa pode dizer que não sabia do defeito para não se responsabilizar?", "artigos": ["23"]}
+{"pergunta": "O supermercado responde pelo produto estragado se não dá para identificar quem fabricou?", "artigos": ["13"]}
+{"pergunta": "Uma empresa de serviços responde pelos danos mesmo sem ter tido culpa?", "artigos": ["14"]}
+{"pergunta": "Me machuquei com um produto que outra pessoa comprou. Posso ser indenizado?", "artigos": ["17"]}
+{"pergunta": "Os sócios podem ser cobrados com o próprio patrimônio se a empresa não pagar o consumidor?", "artigos": ["28"]}
+{"pergunta": "Quem tem que provar que a propaganda é verdadeira?", "artigos": ["38"]}
+{"pergunta": "Propaganda disfarçada, que não parece anúncio, é permitida?", "artigos": ["36"]}
+{"pergunta": "O rótulo de um produto importado precisa estar em português?", "artigos": ["31"]}
+{"pergunta": "Quais punições uma empresa pode sofrer por desrespeitar o consumidor?", "artigos": ["56"]}
+{"pergunta": "Uma empresa que fez propaganda enganosa pode ser obrigada a desmentir o anúncio?", "artigos": ["60"]}
+{"pergunta": "Quem pode entrar com uma ação coletiva para defender os consumidores?", "artigos": ["82"]}
+{"pergunta": "Posso processar a empresa na cidade onde eu moro?", "artigos": ["101"]}
+{"pergunta": "Estou endividado demais. Existe algum processo para renegociar todas as dívidas juntas?", "artigos": ["104-A"]}
+{"pergunta": "O banco pode anunciar empréstimo dizendo que não consulta o SPC?", "artigos": ["54-C"]}
+{"pergunta": "Antes de eu contratar um empréstimo, o banco tem que me informar o custo total?", "artigos": ["52", "54-B", "54-D"]}
+{"pergunta": "Se eu cancelar a compra, o financiamento ligado a ela também é cancelado?", "artigos": ["54-F"]}
+{"pergunta": "Produtos perigosos precisam trazer avisos na embalagem?", "artigos": ["9", "63"]}
+{"pergunta": "O que a empresa deve fazer se descobrir que um produto já vendido é perigoso?", "artigos": ["10", "64"]}
+{"pergunta": "Se eu desistir da compra dentro do prazo, recebo de volta o valor que paguei?", "artigos": ["49"]}
