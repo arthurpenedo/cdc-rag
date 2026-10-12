@@ -44,6 +44,16 @@ jobs:
         run: pytest -q
       - name: Comparar métodos e gerar a página
         run: cdc-rag comparar --html site/index.html --json site/resultados.json
+      - name: Respostas de exemplo com modelo aberto (Ollama, qwen2.5:3b), grátis e sem chave de API
+        # Opcional: se falhar, a página de busca e a comparação seguem publicadas.
+        continue-on-error: true
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          ollama serve > ollama.log 2>&1 &
+          for i in $(seq 1 30); do curl -s localhost:11434/api/tags > /dev/null && break; sleep 2; done
+          ollama pull qwen2.5:3b
+          cdc-rag exemplos --html site/exemplos.html
+          sed -i 's|<h2>Experimente</h2>|<p><a href="exemplos.html">Ver respostas com citação de artigos (modelo aberto) →</a></p><h2>Experimente</h2>|' site/index.html
       - uses: actions/upload-artifact@v4
         if: always()
         with:

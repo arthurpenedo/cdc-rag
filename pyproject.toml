@@ -10,9 +10,10 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
 authors = [{ name = "Arthur Penedo" }]
-dependencies = ["anthropic>=1.0"]
+dependencies = ["pydantic>=2.6"]
 
 [project.optional-dependencies]
+claude = ["anthropic>=1.0"]
 embeddings = ["model2vec>=0.9", "numpy>=1.26"]
 dev = ["pytest>=8"]
 

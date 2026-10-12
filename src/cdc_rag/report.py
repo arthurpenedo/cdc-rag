@@ -59,6 +59,32 @@ footer{margin-top:40px;font-size:13px}
 """
 
 
+def render_exemplos(respostas: list[tuple[str, "Answer"]], modelo: str, data: datetime | None = None) -> str:
+    """Página com perguntas respondidas por modelo aberto, mostrando citados × recuperados × descartados."""
+    data = data or datetime.now()
+    cards = []
+    for pergunta, a in respostas:
+        citados = ", ".join(a.artigos_citados) or "nenhum"
+        extra = (f'<p class="bad">Citações descartadas (não estavam nos artigos fornecidos): '
+                 f'{escape(", ".join(a.artigos_descartados))}</p>' if a.artigos_descartados else "")
+        cards.append(
+            f'<div class="card" style="margin-top:12px"><strong>{escape(pergunta)}</strong>'
+            f'<p style="white-space:pre-wrap">{escape(a.texto)}</p>'
+            f'<p class="muted">Artigos citados: <b>{escape(citados)}</b> · recuperados pela busca: '
+            f'{escape(", ".join(a.artigos_recuperados))}</p>{extra}</div>')
+    return f"""<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>cdc-rag · Respostas com modelo aberto</title><style>{CSS}</style></head><body><main>
+<h1>Respostas com modelo aberto</h1>
+<p class="muted"><a href="index.html">← Busca e comparação</a> · Modelo <code>{escape(modelo)}</code> (Ollama, grátis, rodando no CI).
+O código só aceita citação de artigo que a busca forneceu; o resto é descartado e aparece em vermelho.</p>
+{''.join(cards)}
+<footer class="muted">⚖️ Projeto educacional; não substitui orientação jurídica, Procon ou Defensoria Pública.
+Gerado em {data:%d/%m/%Y %H:%M}. Feito por <a href="https://github.com/arthurpenedo">Arthur Penedo</a>.</footer>
+</main></body></html>
+"""
+
+
 def _pos(p: int | None, k: int) -> str:
     if p is None:
         return '<td class="pos bad" title="fora do top-10">—</td>'

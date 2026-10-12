@@ -1,7 +1,8 @@
 """CLI.
 
     cdc-rag buscar "Posso desistir de uma compra online?" [--metodo hibrido]
-    cdc-rag perguntar "Posso desistir de uma compra online?"     # precisa de ANTHROPIC_API_KEY
+    cdc-rag perguntar "Posso desistir de uma compra online?" [--modelo ollama]   # claude: ANTHROPIC_API_KEY
+    cdc-rag exemplos --html site/exemplos.html                   # respostas de exemplo com Ollama
     cdc-rag avaliar [-k 3] [--metodo bm25]
     cdc-rag comparar [--html site/index.html] [--json resultados.json]
 
@@ -27,6 +28,13 @@ def main(argv: list[str] | None = None) -> int:
         p.add_argument("pergunta")
         p.add_argument("-k", type=int, default=4)
         p.add_argument("--metodo", choices=METHODS, default="bm25")
+        if name == "perguntar":
+            p.add_argument("--modelo", choices=["claude", "ollama"], default="claude",
+                           help="claude (paga, citações nativas) ou ollama (modelo aberto, grátis)")
+    p_ex = sub.add_parser("exemplos", help="responde as perguntas de exemplo com Ollama e gera a página HTML")
+    p_ex.add_argument("--html", type=Path, required=True)
+    p_ex.add_argument("-k", type=int, default=4)
+    p_ex.add_argument("--metodo", choices=METHODS, default="bm25")
     p_eval = sub.add_parser("avaliar")
     p_eval.add_argument("-k", type=int, default=3)
     p_eval.add_argument("--metodo", choices=METHODS, default="bm25")
@@ -52,12 +60,23 @@ def main(argv: list[str] | None = None) -> int:
             trecho = hit.article.texto.replace("\n", " ")[:160]
             print(f"[{hit.score:>6.2f}] {trecho}...")
     elif args.cmd == "perguntar":
-        from .answer import answer
+        from .answer import answer, answer_ollama
 
-        result = answer(args.pergunta, index, k=args.k)
+        responder = answer_ollama if args.modelo == "ollama" else answer
+        result = responder(args.pergunta, index, k=args.k)
         print(result.texto)
         print(f"\nArtigos citados: {', '.join(result.artigos_citados) or '-'}")
         print(f"Artigos recuperados: {', '.join(result.artigos_recuperados)}")
+        if result.artigos_descartados:
+            print(f"Citações descartadas: {', '.join(result.artigos_descartados)}")
+    elif args.cmd == "exemplos":
+        from .answer import OLLAMA_MODEL, answer_ollama
+        from .report import EXEMPLOS, render_exemplos
+
+        respostas = [(p, answer_ollama(p, index, k=args.k)) for p in EXEMPLOS]
+        args.html.parent.mkdir(parents=True, exist_ok=True)
+        args.html.write_text(render_exemplos(respostas, OLLAMA_MODEL), encoding="utf-8")
+        print(f"Exemplos: {args.html}")
     else:
         report = evaluate(index, load_questions(), k=args.k)
         print(f"Método: {args.metodo}")

@@ -55,3 +55,30 @@ def test_answer_collects_cited_articles(index):
     assert result.artigos_citados == ["Art. 42"]
     assert "Art. 42" in result.artigos_recuperados
     assert calls[0]["fallbacks"] == "default"
+
+
+def test_ollama_answer_keeps_only_citations_that_were_provided(index):
+    import json
+
+    from cdc_rag.answer import answer_ollama
+
+    saida = {"resposta": "Sim, em dobro.", "artigos_citados": ["Art. 42", "Art. 999", "Art. 42"]}
+    calls = []
+
+    def post(url, payload):
+        calls.append((url, payload))
+        return {"message": {"content": json.dumps(saida)}}
+
+    result = answer_ollama("Fui cobrado indevidamente, recebo em dobro?", index, post=post)
+    assert result.texto == "Sim, em dobro."
+    assert result.artigos_citados == ["Art. 42"] and result.artigos_descartados == ["Art. 999"]
+    url, payload = calls[0]
+    assert url.endswith("/api/chat") and '<artigo id="Art. 42">' in payload["messages"][1]["content"]
+
+
+def test_exemplos_page_flags_discarded_citations():
+    from cdc_rag.answer import Answer
+    from cdc_rag.report import render_exemplos
+
+    html = render_exemplos([("P <b>?", Answer("R", ["Art. 1"], ["Art. 1"], ["Art. 9"]))], "qwen2.5:3b")
+    assert "P &lt;b&gt;?" in html and "Citações descartadas" in html and "Art. 9" in html

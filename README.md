@@ -45,6 +45,14 @@ Execução real (30/09/2026, `claude-opus-5-5`, effort `low`, busca híbrida, k=
 
 O que isso mostra: a citação vem da própria API (não de um "[fonte]" escrito pelo modelo), e dos quatro artigos recuperados só o relevante foi citado. Também mostra o ponto fraco atual: a busca pôs o art. 49 em 3º lugar. Custo medido: 3.630 tokens de entrada, 583 de saída, **US$ 0,026**.
 
+## Resposta com modelo aberto (grátis)
+
+`cdc-rag perguntar "..." --modelo ollama` responde com um modelo aberto (padrão `qwen2.5:3b`, via [Ollama](https://ollama.com)), sem chave de API e sem custo. O Ollama não tem citações nativas como a API do Claude; então o modelo devolve em JSON o texto e os ids dos artigos que usou, e **o código só aceita ids que a busca realmente forneceu**. Citação inventada é descartada e aparece em vermelho (`Citações descartadas`).
+
+O workflow `busca.yml` roda o Ollama no runner, responde as 4 perguntas de exemplo (`cdc-rag exemplos`) e publica `exemplos.html` no Pages. Se esse passo falhar, a busca e a comparação seguem publicadas.
+
+Limites honestos: a validação garante que o artigo citado foi fornecido, não que ele sustenta de fato a frase; a fidelidade das respostas do qwen2.5:3b ainda não foi medida, e os testes usam um modelo falso.
+
 ## Arquitetura
 
 ```

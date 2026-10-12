@@ -5,14 +5,19 @@ A API devolve os trechos citados apontando para o documento de origem, então a
 resposta final lista exatamente quais artigos embasaram cada afirmação.
 """
 
+import json
 import os
+import urllib.request
 from dataclasses import dataclass, field
+from typing import Callable
 
-import anthropic
+from pydantic import BaseModel, ConfigDict
 
 from .retrieval import Hit
 
 MODEL = os.getenv("CDC_RAG_MODEL", "claude-opus-5-5")
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
+OLLAMA_MODEL = os.getenv("CDC_RAG_OLLAMA_MODEL", "qwen2.5:3b")
 
 SYSTEM_PROMPT = """Você responde dúvidas de consumidores brasileiros com base EXCLUSIVAMENTE nos artigos \
 do Código de Defesa do Consumidor fornecidos como documentos.
@@ -32,6 +37,7 @@ class Answer:
     texto: str
     artigos_citados: list[str] = field(default_factory=list)
     artigos_recuperados: list[str] = field(default_factory=list)
+    artigos_descartados: list[str] = field(default_factory=list)  # ids citados pelo modelo que não foram fornecidos
 
 
 def build_documents(hits: list[Hit]) -> list[dict]:
@@ -46,13 +52,65 @@ def build_documents(hits: list[Hit]) -> list[dict]:
     ]
 
 
-def answer(question: str, index, k: int = 4, client: anthropic.Anthropic | None = None) -> Answer:
+class _Resposta(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    resposta: str
+    artigos_citados: list[str]
+
+
+SYSTEM_PROMPT_ABERTO = SYSTEM_PROMPT + """
+
+Os artigos vêm numerados em <artigo id="...">. Responda em JSON com:
+- "resposta": o texto para o consumidor;
+- "artigos_citados": os ids (exatamente como aparecem em id="...") dos artigos que sustentam a resposta.
+Cite só artigos que você realmente usou. Se nenhum artigo responde, deixe a lista vazia."""
+
+
+def _post_json(url: str, payload: dict) -> dict:
+    req = urllib.request.Request(url, data=json.dumps(payload).encode(), headers={"Content-Type": "application/json"})
+    with urllib.request.urlopen(req, timeout=600) as resp:
+        return json.load(resp)
+
+
+def answer_ollama(question: str, index, k: int = 4, model: str = OLLAMA_MODEL, url: str = OLLAMA_URL,
+                  post: Callable[[str, dict], dict] = _post_json) -> Answer:
+    """Resposta com modelo aberto (Ollama): grátis e sem chave. Citações validadas no código.
+
+    Diferente do Claude, o Ollama não tem citações nativas: o modelo devolve os ids dos artigos que
+    usou e o código só aceita ids que estejam entre os artigos recuperados. Id inventado é descartado
+    (e contado em `artigos_descartados`), então a resposta nunca aponta para um artigo que não foi fornecido.
+    """
     hits = index.search(question, k=k)
     recuperados = [h.article.titulo for h in hits]
     if not hits:
         return Answer("Não encontrei artigos do CDC relacionados a essa pergunta.", [], [])
 
-    client = client or anthropic.Anthropic()
+    contexto = "\n\n".join(f'<artigo id="{h.article.titulo}">\n{h.article.texto}\n</artigo>' for h in hits)
+    response = post(f"{url.rstrip('/')}/api/chat", {
+        "model": model, "stream": False,
+        "format": _Resposta.model_json_schema(),
+        "options": {"temperature": 0, "seed": 7},
+        "messages": [{"role": "system", "content": SYSTEM_PROMPT_ABERTO},
+                     {"role": "user", "content": f"{contexto}\n\nPergunta: {question}"}],
+    })
+    saida = _Resposta.model_validate(json.loads(response["message"]["content"]))
+    validos = set(recuperados)
+    citados = list(dict.fromkeys(a for a in saida.artigos_citados if a in validos))
+    descartados = [a for a in saida.artigos_citados if a not in validos]
+    return Answer(saida.resposta.strip(), citados, recuperados, descartados)
+
+
+def answer(question: str, index, k: int = 4, client=None) -> Answer:
+    hits = index.search(question, k=k)
+    recuperados = [h.article.titulo for h in hits]
+    if not hits:
+        return Answer("Não encontrei artigos do CDC relacionados a essa pergunta.", [], [])
+
+    if client is None:
+        import anthropic  # import preguiçoso: a resposta com Ollama não precisa do SDK
+
+        client = anthropic.Anthropic()
     response = client.beta.messages.create(
         model=MODEL,
         max_tokens=16000,
