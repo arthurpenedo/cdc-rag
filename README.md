@@ -51,7 +51,9 @@ O que isso mostra: a citação vem da própria API (não de um "[fonte]" escrito
 
 O workflow `busca.yml` roda o Ollama no runner, responde as 4 perguntas de exemplo (`cdc-rag exemplos`) e publica `exemplos.html` no Pages. Se esse passo falhar, a busca e a comparação seguem publicadas.
 
-Limites honestos: a validação garante que o artigo citado foi fornecido, não que ele sustenta de fato a frase; a fidelidade das respostas do qwen2.5:3b ainda não foi medida, e os testes usam um modelo falso.
+**Medido no CI** (12/10/2026, `qwen2.5:3b` em CPU, [exemplos.html](https://arthurpenedo.github.io/cdc-rag/exemplos.html)): nas 4 perguntas de exemplo, **0 citações descartadas** e o modelo citou o artigo certo em todas (49, 42, 26 e 40), conferido à mão contra o texto do CDC.
+
+Limites honestos: a validação garante que o artigo citado foi fornecido, não que ele sustenta de fato a frase; 4 perguntas é amostra pequena; os testes usam um modelo falso.
 
 ## Arquitetura
 
