@@ -9,8 +9,12 @@ import json
 from datetime import datetime
 from html import escape
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from .retrieval import BM25
+
+if TYPE_CHECKING:
+    from .answer import Answer
 
 JS = (Path(__file__).parent / "static" / "busca.js").read_text(encoding="utf-8")
 
