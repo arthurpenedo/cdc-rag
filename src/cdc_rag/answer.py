@@ -8,8 +8,8 @@ resposta final lista exatamente quais artigos embasaram cada afirmação.
 import json
 import os
 import urllib.request
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Callable
 
 from pydantic import BaseModel, ConfigDict
 
