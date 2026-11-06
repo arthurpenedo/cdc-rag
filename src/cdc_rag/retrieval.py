@@ -75,13 +75,13 @@ class BM25:
             "k1": self.k1, "b": self.b, "avg_len": self.avg_len, "idf": self.idf,
             "stopwords": sorted(STOPWORDS), "suffixes": SUFFIXES,
             "docs": [{"artigo": a.artigo, "tf": dict(d), "len": n}
-                     for a, d, n in zip(self.articles, self.docs, self.lengths)],
+                     for a, d, n in zip(self.articles, self.docs, self.lengths, strict=True)],
         }
 
     def search(self, query: str, k: int = 5) -> list[Hit]:
         terms = tokenize(query)
         scores = []
-        for doc, length in zip(self.docs, self.lengths):
+        for doc, length in zip(self.docs, self.lengths, strict=True):
             s = 0.0
             for t in terms:
                 tf = doc.get(t, 0)
