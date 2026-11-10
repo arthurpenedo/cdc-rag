@@ -57,6 +57,29 @@ def test_answer_collects_cited_articles(index):
     assert calls[0]["fallbacks"] == "default"
 
 
+def test_pergunta_sem_artigos_nao_chama_o_modelo():
+    from cdc_rag.answer import answer_ollama
+
+    vazio = SimpleNamespace(search=lambda _q, k=4: [])
+
+    def nunca(*_a, **_k):
+        raise AssertionError("o modelo não deveria ser chamado sem artigos recuperados")
+
+    r1 = answer("xyz", vazio, client=SimpleNamespace(beta=nunca))
+    r2 = answer_ollama("xyz", vazio, post=nunca)
+    for r in (r1, r2):
+        assert "Não encontrei artigos" in r.texto and r.artigos_citados == [] and r.artigos_recuperados == []
+
+
+def test_recusa_do_modelo_vira_erro_claro(index):
+    from cdc_rag.answer import RefusalError
+
+    response = SimpleNamespace(stop_reason="refusal", content=[])
+    client = SimpleNamespace(beta=SimpleNamespace(messages=SimpleNamespace(create=lambda **_kw: response)))
+    with pytest.raises(RefusalError, match="recusou"):
+        answer("Fui cobrado indevidamente, recebo em dobro?", index, client=client)
+
+
 def test_ollama_answer_keeps_only_citations_that_were_provided(index):
     import json
 
