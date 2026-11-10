@@ -51,3 +51,21 @@ def test_comparar_so_bm25_grava_json(monkeypatch, tmp_path, capsys):
     dados = json.loads(destino.read_text(encoding="utf-8"))
     assert list(dados) == ["bm25"] and "mrr" in dados["bm25"]
     assert "Só BM25" in capsys.readouterr().err
+
+
+def test_avaliar_imprime_metricas(capsys):
+    assert cli.main(["avaliar", "-k", "3"]) == 0
+    saida = capsys.readouterr().out
+    assert "Método: bm25" in saida and "hit@3:" in saida and "MRR:" in saida
+
+
+def test_exemplos_grava_html_com_respostas_do_ollama(monkeypatch, tmp_path, capsys):
+    from cdc_rag.report import EXEMPLOS
+
+    falsa = Answer("Pode, em 7 dias.", ["Art. 49"], ["Art. 49"], ["Art. 999"])
+    monkeypatch.setattr(answer_mod, "answer_ollama", lambda *a, **k: falsa)
+    destino = tmp_path / "site" / "exemplos.html"
+    assert cli.main(["exemplos", "--html", str(destino)]) == 0
+    pagina = destino.read_text(encoding="utf-8")
+    assert "Art. 49" in pagina and EXEMPLOS[0] in pagina
+    assert f"Exemplos: {destino}" in capsys.readouterr().out
