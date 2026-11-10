@@ -12,6 +12,7 @@ import sys
 import urllib.request
 from html.parser import HTMLParser
 from pathlib import Path
+from typing import ClassVar
 
 URL = "https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm"
 OUT = Path(__file__).parent.parent / "src" / "cdc_rag" / "data" / "cdc_artigos.jsonl"
@@ -22,8 +23,8 @@ ART = re.compile(r"^Art\.\s*(\d+)(?:-([A-Z]))?\s*[º°o]?\.?", re.MULTILINE)
 class TextExtractor(HTMLParser):
     """Extrai o texto visível, ignorando o conteúdo riscado (revogado)."""
 
-    SKIP = {"strike", "s", "del", "script", "style"}
-    BLOCK = {"p", "br", "div", "tr", "li", "h1", "h2", "h3", "h4"}
+    SKIP: ClassVar[set[str]] = {"strike", "s", "del", "script", "style"}
+    BLOCK: ClassVar[set[str]] = {"p", "br", "div", "tr", "li", "h1", "h2", "h3", "h4"}
 
     def __init__(self):
         super().__init__()

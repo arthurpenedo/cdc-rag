@@ -14,7 +14,14 @@ from pathlib import Path
 
 DATA = Path(__file__).parent / "data" / "cdc_artigos.jsonl"
 
-STOPWORDS = set(["a", "o", "as", "os", "um", "uma", "uns", "umas", "de", "da", "do", "das", "dos", "e", "em", "no", "na", "nos", "nas", "por", "pela", "pelo", "pelas", "pelos", "para", "com", "sem", "que", "se", "ao", "aos", "ou", "como", "mais", "menos", "sua", "seu", "suas", "seus", "eu", "me", "meu", "minha", "voce", "tenho", "tem", "ter", "pode", "posso", "quando", "qual", "quais", "quanto", "quem", "isso", "esta", "este", "essa", "esse", "foi", "ser", "sao", "sobre", "ate", "ja", "nao", "art", "paragrafo", "inciso", "lei"])
+STOPWORDS = {
+    "a", "o", "as", "os", "um", "uma", "uns", "umas", "de", "da", "do", "das", "dos", "e", "em", "no",
+    "na", "nos", "nas", "por", "pela", "pelo", "pelas", "pelos", "para", "com", "sem", "que", "se",
+    "ao", "aos", "ou", "como", "mais", "menos", "sua", "seu", "suas", "seus", "eu", "me", "meu",
+    "minha", "voce", "tenho", "tem", "ter", "pode", "posso", "quando", "qual", "quais", "quanto",
+    "quem", "isso", "esta", "este", "essa", "esse", "foi", "ser", "sao", "sobre", "ate", "ja", "nao",
+    "art", "paragrafo", "inciso", "lei"
+}
 
 
 def normalize(text: str) -> str:
