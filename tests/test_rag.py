@@ -105,3 +105,20 @@ def test_exemplos_page_flags_discarded_citations():
 
     html = render_exemplos([("P <b>?", Answer("R", ["Art. 1"], ["Art. 1"], ["Art. 9"]))], "qwen2.5:3b")
     assert "P &lt;b&gt;?" in html and "Citações descartadas" in html and "Art. 9" in html
+
+
+def test_post_json_envia_json_e_le_resposta(monkeypatch):
+    import io
+    import json
+
+    from cdc_rag import answer as mod
+
+    vistos = {}
+
+    def falso_urlopen(req, timeout):
+        vistos["url"], vistos["corpo"], vistos["timeout"] = req.full_url, json.loads(req.data), timeout
+        return io.StringIO('{"ok": true}')
+
+    monkeypatch.setattr(mod.urllib.request, "urlopen", falso_urlopen)
+    assert mod._post_json("http://x/api", {"a": 1}) == {"ok": True}
+    assert vistos["corpo"] == {"a": 1} and vistos["url"] == "http://x/api" and vistos["timeout"] == 600
