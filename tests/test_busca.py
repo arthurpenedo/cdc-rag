@@ -98,3 +98,8 @@ def test_page_examples_hit_first_place_in_browser_search(articles):
     index = BM25(articles)
     esperado = ["49", "42", "26", "40"]
     assert [index.search(q, k=1)[0].article.artigo for q in EXEMPLOS] == esperado
+
+
+def test_build_index_metodo_desconhecido_levanta_valueerror():
+    with pytest.raises(ValueError, match="desconhecido"):
+        build_index("semantico", [])

@@ -23,6 +23,8 @@ def load_questions(path: Path = QUESTIONS) -> list[dict]:
 
 def build_index(method: str, articles: list[Article], encoder=None):
     """bm25 não tem dependências; denso e hibrido exigem o extra [embeddings] (ou um encoder injetado)."""
+    if method not in METHODS:  # antes de importar o extra: método errado não pode virar ImportError
+        raise ValueError(f"método desconhecido: {method}")
     bm25 = BM25(articles)
     if method == "bm25":
         return bm25
