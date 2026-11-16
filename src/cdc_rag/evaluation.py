@@ -41,6 +41,8 @@ def build_index(method: str, articles: list[Article], encoder=None):
 
 
 def evaluate(index, questions: list[dict], k: int = 3) -> dict:
+    if not questions:
+        raise ValueError("a lista de perguntas está vazia: não há o que avaliar.")
     hits, rr, misses, detalhes = 0, 0.0, [], []
     for q in questions:
         ranked = [h.article.artigo for h in index.search(q["pergunta"], k=10)]

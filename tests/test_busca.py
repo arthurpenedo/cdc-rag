@@ -103,3 +103,8 @@ def test_page_examples_hit_first_place_in_browser_search(articles):
 def test_build_index_metodo_desconhecido_levanta_valueerror():
     with pytest.raises(ValueError, match="desconhecido"):
         build_index("semantico", [])
+
+
+def test_evaluate_sem_perguntas_da_erro_claro():
+    with pytest.raises(ValueError, match="vazia"):
+        evaluate(BM25([Article("1", "texto qualquer")]), [], k=3)
