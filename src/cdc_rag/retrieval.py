@@ -62,11 +62,14 @@ class Hit:
 
 
 def load_articles(path: Path = DATA) -> list[Article]:
-    return [Article(**json.loads(line)) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    texto = path.read_text(encoding="utf-8-sig")  # aceita arquivo salvo com BOM (Bloco de Notas)
+    return [Article(**json.loads(line)) for line in texto.splitlines() if line.strip()]
 
 
 class BM25:
     def __init__(self, articles: list[Article], k1: float = 1.5, b: float = 0.75):
+        if not articles:
+            raise ValueError("BM25 precisa de pelo menos um artigo")
         self.articles = articles
         self.k1, self.b = k1, b
         self.docs = [Counter(tokenize(a.texto)) for a in articles]

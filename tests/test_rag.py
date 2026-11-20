@@ -122,3 +122,15 @@ def test_post_json_envia_json_e_le_resposta(monkeypatch):
     monkeypatch.setattr(mod.urllib.request, "urlopen", falso_urlopen)
     assert mod._post_json("http://x/api", {"a": 1}) == {"ok": True}
     assert vistos["corpo"] == {"a": 1} and vistos["url"] == "http://x/api" and vistos["timeout"] == 600
+
+
+def test_bm25_sem_artigos_da_erro_claro():
+    import pytest
+    with pytest.raises(ValueError, match="pelo menos um artigo"):
+        BM25([])
+
+
+def test_load_articles_aceita_bom(tmp_path):
+    arq = tmp_path / "a.jsonl"
+    arq.write_text('{"artigo": "1", "texto": "Texto"}\n', encoding="utf-8-sig")
+    assert [a.artigo for a in load_articles(arq)] == ["1"]
