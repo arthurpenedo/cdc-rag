@@ -69,3 +69,10 @@ def test_exemplos_grava_html_com_respostas_do_ollama(monkeypatch, tmp_path, caps
     pagina = destino.read_text(encoding="utf-8")
     assert "Art. 49" in pagina and EXEMPLOS[0] in pagina
     assert f"Exemplos: {destino}" in capsys.readouterr().out
+
+
+def test_buscar_rejeita_pergunta_vazia_e_k_invalido(capsys):
+    assert cli.main(["buscar", "   "]) == 2
+    assert "não vazia" in capsys.readouterr().err
+    assert cli.main(["buscar", "troca", "-k", "0"]) == 2
+    assert "1 ou mais" in capsys.readouterr().err

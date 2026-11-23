@@ -49,6 +49,14 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "comparar":
         return _comparar(articles, args)
 
+    if args.cmd in ("buscar", "perguntar"):
+        if not args.pergunta.strip():
+            print("Informe uma pergunta não vazia.", file=sys.stderr)
+            return 2
+        if args.k < 1:
+            print("-k precisa ser 1 ou mais.", file=sys.stderr)
+            return 2
+
     try:
         index = build_index(args.metodo, articles)
     except RuntimeError as exc:
