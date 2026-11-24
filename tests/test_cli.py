@@ -2,6 +2,8 @@
 
 import json
 
+import pytest
+
 from cdc_rag import answer as answer_mod
 from cdc_rag import cli
 from cdc_rag.answer import Answer
@@ -76,3 +78,9 @@ def test_buscar_rejeita_pergunta_vazia_e_k_invalido(capsys):
     assert "não vazia" in capsys.readouterr().err
     assert cli.main(["buscar", "troca", "-k", "0"]) == 2
     assert "1 ou mais" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize("cmd", [["avaliar"], ["comparar"], ["exemplos", "--html", "x.html"]])
+def test_k_invalido_e_recusado_em_todos_os_comandos(cmd, capsys):
+    assert cli.main([*cmd, "-k", "0"]) == 2
+    assert "-k precisa ser 1 ou mais" in capsys.readouterr().err
