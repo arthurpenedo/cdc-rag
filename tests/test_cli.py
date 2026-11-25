@@ -90,3 +90,11 @@ def test_k_invalido_e_recusado_em_todos_os_comandos(cmd, capsys):
 def test_comparar_com_pasta_no_lugar_do_arquivo_falha_com_codigo_2(tmp_path, capsys, opcao):
     assert cli.main(["comparar", opcao, str(tmp_path)]) == 2
     assert "é uma pasta" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize("opcao", ["--html", "--json"])
+def test_comparar_com_caminho_dentro_de_arquivo_falha_com_codigo_2(tmp_path, capsys, opcao):
+    arq = tmp_path / "arq.txt"
+    arq.write_text("x", encoding="utf-8")
+    assert cli.main(["comparar", opcao, str(arq / "saida")]) == 2
+    assert "passa por um arquivo" in capsys.readouterr().err

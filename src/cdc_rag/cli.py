@@ -55,6 +55,9 @@ def main(argv: list[str] | None = None) -> int:
         if destino is not None and destino.is_dir():
             print(f"{destino} é uma pasta; informe o caminho de um arquivo.", file=sys.stderr)
             return 2
+        if destino is not None and any(p.is_file() for p in destino.parents):
+            print(f"{destino} passa por um arquivo; informe um caminho dentro de uma pasta.", file=sys.stderr)
+            return 2
 
     articles = load_articles()
 
