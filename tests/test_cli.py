@@ -84,3 +84,9 @@ def test_buscar_rejeita_pergunta_vazia_e_k_invalido(capsys):
 def test_k_invalido_e_recusado_em_todos_os_comandos(cmd, capsys):
     assert cli.main([*cmd, "-k", "0"]) == 2
     assert "-k precisa ser 1 ou mais" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize("opcao", ["--html", "--json"])
+def test_comparar_com_pasta_no_lugar_do_arquivo_falha_com_codigo_2(tmp_path, capsys, opcao):
+    assert cli.main(["comparar", opcao, str(tmp_path)]) == 2
+    assert "é uma pasta" in capsys.readouterr().err

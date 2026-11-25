@@ -51,6 +51,11 @@ def main(argv: list[str] | None = None) -> int:
         print("Informe uma pergunta não vazia.", file=sys.stderr)
         return 2
 
+    for destino in (getattr(args, "html", None), getattr(args, "json", None)):
+        if destino is not None and destino.is_dir():
+            print(f"{destino} é uma pasta; informe o caminho de um arquivo.", file=sys.stderr)
+            return 2
+
     articles = load_articles()
 
     if args.cmd == "comparar":
