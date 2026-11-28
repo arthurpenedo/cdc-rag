@@ -130,6 +130,14 @@ def test_bm25_sem_artigos_da_erro_claro():
         BM25([])
 
 
+def test_load_articles_formato_errado_diz_a_linha(tmp_path):
+    for ruim in ("[1]", "{}", "não é json"):
+        arq = tmp_path / "a.jsonl"
+        arq.write_text('{"artigo": "1", "texto": "Texto"}\n' + ruim + "\n", encoding="utf-8")
+        with pytest.raises(ValueError, match="a.jsonl linha 2"):
+            load_articles(arq)
+
+
 def test_load_articles_aceita_bom(tmp_path):
     arq = tmp_path / "a.jsonl"
     arq.write_text('{"artigo": "1", "texto": "Texto"}\n', encoding="utf-8-sig")

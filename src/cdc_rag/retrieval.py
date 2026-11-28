@@ -63,7 +63,15 @@ class Hit:
 
 def load_articles(path: Path = DATA) -> list[Article]:
     texto = path.read_text(encoding="utf-8-sig")  # aceita arquivo salvo com BOM (Bloco de Notas)
-    return [Article(**json.loads(line)) for line in texto.splitlines() if line.strip()]
+    artigos = []
+    for n, line in enumerate(texto.splitlines(), start=1):
+        if not line.strip():
+            continue
+        try:
+            artigos.append(Article(**json.loads(line)))
+        except (TypeError, ValueError) as e:  # JSON quebrado, `[1]`, `{}` ou campo faltando: diz a linha
+            raise ValueError(f"{path.name} linha {n}: esperado um objeto com 'artigo' e 'texto' ({e})") from e
+    return artigos
 
 
 class BM25:
